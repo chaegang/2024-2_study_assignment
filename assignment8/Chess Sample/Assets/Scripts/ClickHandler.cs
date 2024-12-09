@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ClickHandler : MonoBehaviour
@@ -30,9 +31,9 @@ public class ClickHandler : MonoBehaviour
     void HandleMouseDown()
     {
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        var boardPos = GetBoardPosition(mousePosition);
+        var boardPos = GetBoardPosition(mousePosition); //마우스 위치를 보드 사의 좌표로 변환 (int, int)
 
-        if (!Utils.IsInBoard(boardPos)) return;
+        if (!Utils.IsInBoard(boardPos)) return; //마우스 보드 위치가 보드 밖일때
         Piece clickedPiece = gameManager.Pieces[boardPos.Item1, boardPos.Item2];
         if (clickedPiece != null && clickedPiece.PlayerDirection == gameManager.CurrentTurn)
         {
@@ -68,7 +69,15 @@ public class ClickHandler : MonoBehaviour
             // 움직일 수 없다면 selectedPiece를 originalPosition으로 이동시킴
             // effect를 초기화
             // --- TODO ---
-            
+            if (gameManager.IsValidMove(selectedPiece, boardPos))
+            {
+                gameManager.Move(selectedPiece, boardPos);
+            }
+            else
+            {
+                selectedPiece.gameObject.transform.position = originalPosition;
+            }
+            gameManager.ClearEffects();
             // ------
             isDragging = false;
             selectedPiece = null;

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Tile : MonoBehaviour
 {
@@ -19,7 +20,20 @@ public class Tile : MonoBehaviour
         // MyPos를 targetPos로 지정함
         // 위치를 targetPos 이동시키고, 배치에 따라 색깔을 지정
         // --- TODO ---
-        
+        MyPos = targetPos;
+
+        Vector2 RealXY;
+        RealXY = Utils.ToRealPos((targetPos.Item1, targetPos.Item2));
+        Vector3 NewTileVector = new Vector3(RealXY.x, RealXY.y, 1);
+
+        transform.Translate(NewTileVector);
+
+        int ColorPosition = MyPos.Item1 + MyPos.Item2;
+
+        if (ColorPosition % 2 == 0)
+        {
+            MySpriteRenderer.color = tileColor;
+        }
         // ------
     }
 }

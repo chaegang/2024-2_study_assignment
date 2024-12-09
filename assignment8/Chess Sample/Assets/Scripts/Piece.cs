@@ -32,7 +32,14 @@ public abstract class Piece : MonoBehaviour
     {
         // direction에 따라 sprite를 결정하고, 방향을 결정함
         // --- TODO ---
-        
+        if (direction == 1)
+        {
+            MySpriteRenderer.sprite = WhiteSprite;
+        }
+        else
+        {
+            MySpriteRenderer.sprite = BlackSprite;
+        }
         // ------
     }
 
@@ -42,7 +49,14 @@ public abstract class Piece : MonoBehaviour
         // MyPos를 업데이트하고, targetPos로 이동
         // MyGameManager.Pieces를 업데이트
         // --- TODO ---
-        
+        MyPos = targetPos;
+
+        Vector2 RealXY;
+        RealXY = Utils.ToRealPos(targetPos);
+        Vector3 NewPieceVector = new Vector3(RealXY.x, RealXY.y, 0);
+        transform.position = NewPieceVector; //targetpos로 이동
+
+        MyGameManager.Pieces[targetPos.Item1, targetPos.Item2] = this;
         // ------
     }
     
