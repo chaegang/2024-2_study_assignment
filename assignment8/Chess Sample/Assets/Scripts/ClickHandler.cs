@@ -21,10 +21,10 @@ public class ClickHandler : MonoBehaviour
     {
         float x = worldPosition.x + (Utils.TileSize * Utils.FieldWidth) / 2f;
         float y = worldPosition.y + (Utils.TileSize * Utils.FieldHeight) / 2f;
-        
+
         int boardX = Mathf.FloorToInt(x / Utils.TileSize);
         int boardY = Mathf.FloorToInt(y / Utils.TileSize);
-        
+
         return (boardX, boardY);
     }
 
@@ -42,7 +42,7 @@ public class ClickHandler : MonoBehaviour
             dragOffset = selectedPiece.transform.position - mousePosition;
             dragOffset.z = 0;
             originalPosition = selectedPiece.transform.position;
-            
+
             gameManager.ShowPossibleMoves(selectedPiece);
         }
     }
@@ -69,14 +69,15 @@ public class ClickHandler : MonoBehaviour
             // 움직일 수 없다면 selectedPiece를 originalPosition으로 이동시킴
             // effect를 초기화
             // --- TODO ---
-            if (gameManager.IsValidMove(selectedPiece, boardPos))
+            if (Utils.IsInBoard(boardPos) && gameManager.IsValidMove(selectedPiece, boardPos))
             {
                 gameManager.Move(selectedPiece, boardPos);
             }
             else
             {
-                selectedPiece.gameObject.transform.position = originalPosition;
+                selectedPiece.transform.position = originalPosition;
             }
+
             gameManager.ClearEffects();
             // ------
             isDragging = false;

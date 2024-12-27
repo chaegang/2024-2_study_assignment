@@ -9,7 +9,7 @@ public class MovementManager : MonoBehaviour
     private GameObject effectPrefab;
     private Transform effectParent;
     private List<GameObject> currentEffects = new List<GameObject>();   // 현재 effect들을 저장할 리스트
-    
+
     public void Initialize(GameManager gameManager, GameObject effectPrefab, Transform effectParent)
     {
         this.gameManager = gameManager;
@@ -23,51 +23,33 @@ public class MovementManager : MonoBehaviour
         // 보드에 있는지, 다른 piece에 의해 막히는지 등을 체크
         // 폰에 대한 예외 처리를 적용
         // --- TODO ---
-        int startX = piece.MyPos.Item1;
-        int startY = piece.MyPos.Item2;
-        int dirX = moveInfo.dirX;
-        int dirY = moveInfo.dirY;
+        int sx = piece.MyPos.Item1;
+        int sy = piece.MyPos.Item2;
+        int dx = moveInfo.dirX;
+        int dy = moveInfo.dirY;
 
         for (int step = 1; step <= moveInfo.distance; step++)
         {
-            int newX = startX + dirX * step;
-            int newY = startY + dirY * step;
-            if (!Utils.IsInBoard((newX, newY)))
-                return false;
-            Piece encounteredPiece = gameManager.Pieces[newX, newY];
+            int tox = sx + dx * step;
+            int toy = sy + dy * step;
 
-            if (piece is Pawn)
+            if (!Utils.IsInBoard((tox, toy))) return false;
+
+            Piece encounteredPiece = gameManager.Pieces[tox, toy];
+
+            if ((tox, toy) == (targetPos.Item1, targetPos.Item2))
             {
-                if (dirX == 0)
+                if (piece is Pawn)
                 {
-                    if (encounteredPiece != null)
-                        return false; 
+                    return dx == 0 ? encounteredPiece == null :
+                        encounteredPiece != null && encounteredPiece.PlayerDirection != piece.PlayerDirection;
                 }
-                else
-                {
-                    if (encounteredPiece == null || encounteredPiece.PlayerDirection == piece.PlayerDirection)
-                        return false; 
-                    else if ((newX, newY) == (targetPos.Item1, targetPos.Item2))
-                        return true;
-                    else
-                        return false;
-                }
+                return encounteredPiece == null || encounteredPiece.PlayerDirection != piece.PlayerDirection;
             }
-            else
-            {
-                if (encounteredPiece != null && encounteredPiece.PlayerDirection == piece.PlayerDirection)
-                    return false;
-                if (encounteredPiece != null && encounteredPiece.PlayerDirection != piece.PlayerDirection)
-                {
-                    if ((newX, newY) == (targetPos.Item1, targetPos.Item2))
-                        return true;
-                    else
-                        return false;
-                }
-            }
-            if ((newX, newY) == (targetPos.Item1, targetPos.Item2))
-                return true;
+
+            if (encounteredPiece != null) return false;
         }
+
         return false;
         // ------
     }
@@ -82,7 +64,7 @@ public class MovementManager : MonoBehaviour
             if (TryMove(piece, targetPos, moveInfo))
                 return true;
         }
-        
+
         return false;
     }
 
@@ -93,7 +75,7 @@ public class MovementManager : MonoBehaviour
 
         // 체크 상태 검증을 위한 임시 이동
         var originalPiece = gameManager.Pieces[targetPos.Item1, targetPos.Item2];
-        var originalPos = piece.MyPos; 
+        var originalPos = piece.MyPos;
 
         gameManager.Pieces[targetPos.Item1, targetPos.Item2] = piece;
         gameManager.Pieces[originalPos.Item1, originalPos.Item2] = null;
@@ -129,29 +111,26 @@ public class MovementManager : MonoBehaviour
         // 왕이 지금 체크 상태인지를 리턴
         // gameManager.Pieces에서 Piece들을 참조하여 움직임을 확인
         // --- TODO ---
-        bool IsCheck = false;
+        bool isCheck = false;
+
         for (int x = 0; x < Utils.FieldWidth; x++)
         {
             for (int y = 0; y < Utils.FieldHeight; y++)
             {
                 var piece = gameManager.Pieces[x, y];
-                if (piece != null)
+                if (piece != null && piece.PlayerDirection != playerDirection)
                 {
-                    if (piece.PlayerDirection != playerDirection)
+                    if (IsValidMoveWithoutCheck(piece, kingPos))
                     {
-                        foreach (var moveInfo in piece.GetMoves())
-                        {
-                            if (TryMove(piece, kingPos, moveInfo))
-                            {
-                                IsCheck = true;
-                                break;
-                            }
-                        }
+                        isCheck = true;
+                        break;
                     }
                 }
             }
+            if (isCheck) break;
         }
-        return IsCheck;
+
+        return isCheck;
         // ------
     }
 
@@ -170,12 +149,9 @@ public class MovementManager : MonoBehaviour
             {
                 if (IsValidMove(piece, (x, y)))
                 {
-                    Vector2 RealXY = Utils.ToRealPos((x, y));
-                    Vector3 EffectPosition = new Vector3(RealXY.x, RealXY.y, 0.5f);
-
-                    GameObject NewEffect = Instantiate(effectPrefab, EffectPosition, Quaternion.identity, effectParent);
-
-                    currentEffects.Add(NewEffect);
+                    Vector2 realXY = Utils.ToRealPos((x, y));
+                    GameObject newEffect = Instantiate(effectPrefab, realXY, Quaternion.identity, effectParent);
+                    currentEffects.Add(newEffect);
                 }
             }
         }

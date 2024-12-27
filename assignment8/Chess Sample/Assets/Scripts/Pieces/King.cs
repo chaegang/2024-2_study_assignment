@@ -10,14 +10,14 @@ public class King : Piece
         // --- TODO ---
         return new MoveInfo[]
         {
+            new MoveInfo(0, 1, 1),
+            new MoveInfo(0, -1, 1),  
+            new MoveInfo(1, 0, 1),
             new MoveInfo(1, 1, 1),
             new MoveInfo(1, -1, 1),
-            new MoveInfo(1, 0, 1),
-            new MoveInfo(-1, 1, 1),
-            new MoveInfo(-1, -1, 1),
             new MoveInfo(-1, 0, 1),
-            new MoveInfo(0, 1, 1),
-            new MoveInfo(1, -1, 1),
+            new MoveInfo(-1, 1, 1),    
+            new MoveInfo(-1, -1, 1)  
         };
         // ------
     }

@@ -6,10 +6,10 @@ public abstract class Piece : MonoBehaviour
 {
     public (int, int) MyPos;    // 자신의 좌표
     public int PlayerDirection = 1; // 자신의 방향 1 - 백, 2 - 흑
-    
+
     public Sprite WhiteSprite;  // 백일 때의 sprite
     public Sprite BlackSprite;  // 흑일 때의 sprite
-    
+
     protected GameManager MyGameManager;
     protected SpriteRenderer MySpriteRenderer;
 
@@ -40,6 +40,7 @@ public abstract class Piece : MonoBehaviour
         {
             MySpriteRenderer.sprite = BlackSprite;
         }
+
         // ------
     }
 
@@ -49,16 +50,12 @@ public abstract class Piece : MonoBehaviour
         // MyPos를 업데이트하고, targetPos로 이동
         // MyGameManager.Pieces를 업데이트
         // --- TODO ---
+        MyGameManager.Pieces[MyPos.Item1, MyPos.Item2] = null;
         MyPos = targetPos;
-
-        Vector2 RealXY;
-        RealXY = Utils.ToRealPos(targetPos);
-        Vector3 NewPieceVector = new Vector3(RealXY.x, RealXY.y, 0);
-        transform.position = NewPieceVector; //targetpos로 이동
-
-        MyGameManager.Pieces[targetPos.Item1, targetPos.Item2] = this;
+        transform.position = Utils.ToRealPos(MyPos);
+        MyGameManager.Pieces[MyPos.Item1, MyPos.Item2] = this;
         // ------
     }
-    
+
     public abstract MoveInfo[] GetMoves();
 }

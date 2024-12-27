@@ -8,25 +8,13 @@ public class Rook : Piece
     public override MoveInfo[] GetMoves()
     {
         // --- TODO ---
-        List<MoveInfo> moves = new List<MoveInfo>();
-
-        int[] xy = new int[] {0, 1, -1};
-
-        for (int dis = 1; dis <=7; dis++)
+        return new MoveInfo[]
         {
-            foreach(var x in xy)
-            {
-                foreach(var y in xy)
-                {
-                    if (x == 0 || y ==0 || x != y)
-                    {
-                        moves.Add(new MoveInfo(x, y, dis));
-                    }
-                }
-            }
-        }
-
-        return moves.ToArray();
+            new MoveInfo(0, 1, Utils.FieldHeight),
+            new MoveInfo(0, -1, Utils.FieldHeight),
+            new MoveInfo(1, 0, Utils.FieldWidth),  
+            new MoveInfo(-1, 0, Utils.FieldWidth), 
+        };
         // ------
     }
 }
